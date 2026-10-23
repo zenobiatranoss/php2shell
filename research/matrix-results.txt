@@ -1,0 +1,12 @@
+# lab/matrix.py /tmp/php-asan 8110
+# PHP 8.4.4 ASAN, USE_ZEND_ALLOC=0, freq=0, min_freq=0
+case                 http                   asan   worker
+cleanup=1 single     HTTP/1.1 200 OK        no     alive
+php_serialize        HTTP/1.1 200 OK        no     alive
+php_binary           HTTP/1.1 200 OK        no     alive
+3 files              HTTP/1.1 200 OK        no     alive
+5MB file             HTTP/1.1 200 OK        no     alive
+300 fields+2files    HTTP/1.1 200 OK        no     alive
+weird filename       HTTP/1.1 200 OK        no     alive
+abort mid-file       <closed>               no     alive
+cancel_upload        HTTP/1.1 200 OK        no     alive
