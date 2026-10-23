@@ -1,4 +1,0 @@
-# /tmp/php-up-lab-sess/sess_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-# 258B trigger, PHP 8.4.4: both stores executed (bytes_processed=258,
-# files[0].bytes_processed=1), i.e. the vulnerable path was reached.
-upload_progress_x|a:5:{s:10:"start_time";i:1792550315;s:14:"content_length";i:258;s:15:"bytes_processed";i:258;s:4:"done";b:1;s:5:"files";a:1:{i:0;a:7:{s:10:"field_name";s:1:"f";s:4:"name";s:1:"a";s:8:"tmp_name";s:79:"/private/var/folders/.../phpXXXX";s:5:"error";i:0;s:4:"done";b:1;s:10:"start_time";i:1792550315;s:15:"bytes_processed";i:1;}}}
