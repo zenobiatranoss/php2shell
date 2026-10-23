@@ -1,0 +1,14 @@
+# Ubuntu 26.04, Apache 2.4.66 prefork, libapache2-mod-php8.5 8.5.4-0ubuntu1.3
+# php.ini: memory_limit=8M, default session.upload_progress settings
+# request 1: 20 file parts, each filename 262144 bytes, progress marker "first"
+#
+# client:
+request_1=HTTP/1.0 500 Internal Server Error
+request_2=HTTP/1.1 200 OK
+#
+# /var/log/apache2/error.log:
+[Wed Oct 21 06:15:03.466414 2026] [php:error] [pid 8958:tid 8958] [client ...]
+PHP Fatal error:  Allowed memory size of 8388608 bytes exhausted
+(tried to allocate 266240 bytes) in Unknown on line 0
+Stack trace:
+#0 {main}

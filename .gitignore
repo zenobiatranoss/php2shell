@@ -1,0 +1,18 @@
+build/
+__pycache__/
+*.pyc
+*.o
+*.lo
+*.tar.gz
+lab/cve/out/
+out/
+
+# php2shell research artifacts
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+research/evidence-analysis*.json

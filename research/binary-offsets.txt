@@ -1,0 +1,12 @@
+# libapache2-mod-php8.5 8.5.4-0ubuntu1.3 (amd64), llvm-nm -D
+zend_call_function  0x52a9d0
+zval_ptr_dtor       0x5e8dc0
+delta (dtor - call) 0xbe3f0
+
+# Addresses printed in the circulating demo video:
+#   zend_call_function  0x7b8fd6f2a9d0
+#   zval_ptr_dtor       0x7b8fd6fe8dc0
+# delta = 0xbe3f0  -> matches this exact package build.
+# Implied module base: 0x7b8fd6a00000
+# Reported heap base:  0x7b8fd6800000
+# stale_reference:     heap + 0x75c00

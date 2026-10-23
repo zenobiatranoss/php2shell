@@ -1,0 +1,201 @@
+#!/usr/bin/env python3
+
+import argparse
+import hashlib
+import json
+import re
+from datetime import datetime, timezone
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+
+PATTERNS = {
+    "heap_use_after_free": re.compile(
+        r"AddressSanitizer: heap-use-after-free", re.I
+    ),
+    "address_sanitizer": re.compile(r"AddressSanitizer", re.I),
+    "memory_limit": re.compile(
+        r"Allowed memory size of \d+ bytes exhausted", re.I
+    ),
+    "http_500": re.compile(r"HTTP/\d(?:\.\d)? 500", re.I),
+    "segmentation_fault": re.compile(
+        r"segmentation fault|signal 11|SIGSEGV", re.I
+    ),
+    "command_output_pattern": re.compile(
+        r"\b(?:uid=\d+|gid=\d+)\b", re.I
+    ),
+    "command_execution_claim": re.compile(
+        r"command executed successfully|command execution successful",
+        re.I,
+    ),
+}
+
+SEVERITY = {
+    "heap_use_after_free": "memory_safety",
+    "address_sanitizer": "diagnostic",
+    "memory_limit": "availability",
+    "http_500": "availability",
+    "segmentation_fault": "memory_safety",
+    "command_output_pattern": "unverified_claim",
+    "command_execution_claim": "unverified_claim",
+}
+
+
+def sha256_file(path):
+    digest = hashlib.sha256()
+
+    with path.open("rb") as handle:
+        for block in iter(lambda: handle.read(65536), b""):
+            digest.update(block)
+
+    return digest.hexdigest()
+
+
+def analyze_file(path, context_lines=1):
+    try:
+        content = path.read_text(
+            encoding="utf-8",
+            errors="replace",
+        )
+        digest = sha256_file(path)
+    except OSError as exc:
+        return {
+            "file": str(path.relative_to(ROOT)),
+            "error": str(exc),
+            "findings": [],
+        }
+
+    lines = content.splitlines()
+    findings = []
+
+    for name, pattern in PATTERNS.items():
+        matches = []
+
+        for index, line in enumerate(lines):
+            if not pattern.search(line):
+                continue
+
+            start = max(0, index - context_lines)
+            end = min(len(lines), index + context_lines + 1)
+
+            matches.append({
+                "line": index + 1,
+                "text": line.strip()[:400],
+                "context": [
+                    {
+                        "line": pos + 1,
+                        "text": lines[pos].strip()[:400],
+                    }
+                    for pos in range(start, end)
+                ],
+            })
+
+        if matches:
+            findings.append({
+                "type": name,
+                "category": SEVERITY[name],
+                "match_count": len(matches),
+                "matches": matches[:20],
+            })
+
+    return {
+        "file": str(path.relative_to(ROOT)),
+        "bytes": len(content.encode("utf-8")),
+        "sha256": digest,
+        "findings": findings,
+    }
+
+
+def assess(results):
+    counts = {}
+
+    for result in results:
+        for finding in result.get("findings", []):
+            category = finding["category"]
+            counts[category] = counts.get(category, 0) + 1
+
+    return {
+        "category_counts": counts,
+        "interpretation": [
+            {
+                "category": "memory_safety",
+                "meaning": (
+                    "A matching diagnostic was found; inspect the full "
+                    "trace and reproduce in an isolated lab."
+                ),
+            },
+            {
+                "category": "availability",
+                "meaning": (
+                    "A service failure indicator was found; this alone "
+                    "does not establish its root cause."
+                ),
+            },
+            {
+                "category": "unverified_claim",
+                "meaning": (
+                    "A command-output pattern or claim was found; "
+                    "the text alone does not prove remote execution."
+                ),
+            },
+        ],
+    }
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Analyze local PHP vulnerability research evidence."
+    )
+    parser.add_argument(
+        "--json",
+        action="store_true",
+        help="Write the report as JSON.",
+    )
+    parser.add_argument(
+        "--context",
+        type=int,
+        default=1,
+        help="Context lines around each match (default: 1).",
+    )
+    args = parser.parse_args()
+
+    if args.context < 0 or args.context > 5:
+        parser.error("--context must be between 0 and 5")
+
+    files = sorted(
+        path for path in ROOT.iterdir()
+        if path.is_file() and path.suffix.lower() in {".log", ".txt"}
+    )
+
+    results = [
+        analyze_file(path, args.context)
+        for path in files
+    ]
+
+    report = {
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "scope": "static analysis of local research evidence",
+        "files_analyzed": len(results),
+        "results": results,
+        "assessment": assess(results),
+        "limitations": [
+            "Pattern matches are indicators, not proof of exploitability.",
+            "Text resembling command output does not prove remote execution.",
+            "A missing match does not prove the vulnerability is absent.",
+            "File hashes identify the analyzed contents but do not establish authenticity.",
+        ],
+    }
+
+    if args.json:
+        output = ROOT / "evidence-analysis-v2.json"
+        output.write_text(
+            json.dumps(report, indent=2, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        print(f"Saved report: {output}")
+    else:
+        print(json.dumps(report, indent=2, ensure_ascii=False))
+
+
+if __name__ == "__main__":
+    main()
