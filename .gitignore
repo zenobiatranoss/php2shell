@@ -16,3 +16,6 @@ venv/
 .env.*
 !.env.example
 research/evidence-analysis*.json
+
+__pycache__/
+*.py[cod]
